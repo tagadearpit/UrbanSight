@@ -1,0 +1,11 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_DB: urbansight
+      POSTGRES_USER: urbansight
+      POSTGRES_PASSWORD: change-me-local-only
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data", "./database/migrations/001_initial.sql:/docker-entrypoint-initdb.d/001_initial.sql", "./database/seed/demo.sql:/docker-entrypoint-initdb.d/002_demo.sql"]
+volumes:
+  pgdata:

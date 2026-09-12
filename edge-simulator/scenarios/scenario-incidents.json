@@ -1,0 +1,1 @@
+{"name":"Incident and simulated ANPR","events":[{"busId":"BUS-031","routeId":"R17","eventType":"INCIDENT","confidence":0.91,"latitude":19.12,"longitude":72.85,"severity":"CRITICAL","metadata":{"vehicleNumber":"MH12AB1234","anprMode":"SIMULATION_ONLY","trackingId":"trk_demo_001"}}]}

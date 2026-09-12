@@ -1,0 +1,23 @@
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+CREATE TABLE IF NOT EXISTS roles (id TEXT PRIMARY KEY, name TEXT UNIQUE NOT NULL);
+CREATE TABLE IF NOT EXISTS users (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, role_id TEXT REFERENCES roles(id), created_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE IF NOT EXISTS routes (id TEXT PRIMARY KEY, name TEXT NOT NULL, geometry GEOMETRY(LineString,4326));
+CREATE TABLE IF NOT EXISTS buses (id TEXT PRIMARY KEY, route_id TEXT REFERENCES routes(id), status TEXT NOT NULL, location GEOGRAPHY(Point,4326), last_event_at TIMESTAMPTZ, events_today INT DEFAULT 0);
+CREATE TABLE IF NOT EXISTS bus_locations (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), bus_id TEXT REFERENCES buses(id), location GEOGRAPHY(Point,4326) NOT NULL, recorded_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE IF NOT EXISTS detections (id TEXT PRIMARY KEY, bus_id TEXT REFERENCES buses(id), route_id TEXT REFERENCES routes(id), event_type TEXT NOT NULL, confidence NUMERIC CHECK (confidence BETWEEN 0 AND 1), location GEOGRAPHY(Point,4326) NOT NULL, severity TEXT, evidence_url TEXT, captured_at TIMESTAMPTZ NOT NULL);
+CREATE TABLE IF NOT EXISTS road_issues (id TEXT PRIMARY KEY, type TEXT NOT NULL, severity TEXT NOT NULL, confidence NUMERIC NOT NULL CHECK (confidence BETWEEN 0 AND 1), location GEOGRAPHY(Point,4326) NOT NULL, status TEXT NOT NULL, first_detected_at TIMESTAMPTZ, last_detected_at TIMESTAMPTZ, observation_count INTEGER DEFAULT 1, buses_observed INTEGER DEFAULT 1, severity_reason TEXT, route_id TEXT REFERENCES routes(id), created_at TIMESTAMPTZ DEFAULT now(), updated_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE IF NOT EXISTS issue_observations (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), road_issue_id TEXT REFERENCES road_issues(id), bus_id TEXT REFERENCES buses(id), detection_id TEXT NOT NULL, location GEOGRAPHY(Point,4326) NOT NULL, confidence NUMERIC NOT NULL, timestamp TIMESTAMPTZ NOT NULL, evidence_id TEXT);
+CREATE TABLE IF NOT EXISTS incidents (id TEXT PRIMARY KEY, type TEXT, vehicle TEXT, confidence NUMERIC, location GEOGRAPHY(Point,4326), timestamp TIMESTAMPTZ, status TEXT, evidence_url TEXT);
+CREATE TABLE IF NOT EXISTS vehicles (id TEXT PRIMARY KEY, plate TEXT, vehicle_type TEXT, first_seen TIMESTAMPTZ, last_seen TIMESTAMPTZ);
+CREATE TABLE IF NOT EXISTS traffic_measurements (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), route_id TEXT REFERENCES routes(id), vehicle_count INTEGER, vehicle_types JSONB, density TEXT, average_speed NUMERIC, measured_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE IF NOT EXISTS maintenance_tasks (id TEXT PRIMARY KEY, issue_id TEXT REFERENCES road_issues(id), department TEXT, status TEXT, created_at TIMESTAMPTZ DEFAULT now(), due_date DATE, notes TEXT, updated_at TIMESTAMPTZ DEFAULT now(), verified_at TIMESTAMPTZ, resolved_at TIMESTAMPTZ, repair_verified_at TIMESTAMPTZ);
+CREATE TABLE IF NOT EXISTS evidence (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), issue_id TEXT REFERENCES road_issues(id), storage_url TEXT NOT NULL, kind TEXT, created_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE IF NOT EXISTS notifications (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), kind TEXT, message TEXT, read_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT now());
+CREATE TABLE IF NOT EXISTS audit_logs (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), action TEXT, user_id TEXT, metadata JSONB, created_at TIMESTAMPTZ DEFAULT now());
+CREATE INDEX IF NOT EXISTS road_issues_location_idx ON road_issues USING GIST(location);
+CREATE INDEX IF NOT EXISTS buses_location_idx ON buses USING GIST(location);
+CREATE INDEX IF NOT EXISTS detections_location_idx ON detections USING GIST(location);
+CREATE INDEX IF NOT EXISTS issue_observations_issue_idx ON issue_observations(road_issue_id);
+INSERT INTO roles(id,name) VALUES ('ADMIN','Administrator'),('TRANSPORT_AUTHORITY','Transport Authority'),('TRAFFIC_OFFICER','Traffic Officer'),('MAINTENANCE_OFFICER','Maintenance Officer'),('VIEWER','Viewer') ON CONFLICT DO NOTHING;

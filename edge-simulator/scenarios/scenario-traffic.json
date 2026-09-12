@@ -1,0 +1,1 @@
+{"name":"Traffic observations","events":[{"busId":"BUS-042","routeId":"R17","eventType":"TRAFFIC_CONGESTION","confidence":0.9,"latitude":19.08,"longitude":72.88,"severity":"MEDIUM","metadata":{"vehicleTypes":{"CAR":38,"BIKE":21,"BUS":4,"TRUCK":3,"AUTO":12}}}]}

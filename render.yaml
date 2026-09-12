@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: urbansight-backend
+    runtime: node
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DEMO_MODE
+        value: "false"
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: AI_SERVICE_URL
+        sync: false
+  - type: web
+    name: urbansight-ai
+    runtime: python
+    buildCommand: pip install -r ai-service/requirements.txt
+    startCommand: uvicorn app.main:app --app-dir ai-service --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health

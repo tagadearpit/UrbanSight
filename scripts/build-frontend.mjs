@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const root = path.resolve(process.cwd());
+const out = path.join(root, 'dist');
+fs.rmSync(out, { recursive: true, force: true });
+fs.mkdirSync(out, { recursive: true });
+for (const file of ['index.html','styles.css','app.js']) fs.copyFileSync(path.join(root,file), path.join(out,file));
+const api = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/,'');
+const ws = process.env.NEXT_PUBLIC_WS_URL || (api ? api.replace(/^http/,'ws') + '/ws' : '');
+const config = fs.readFileSync(path.join(root,'frontend-config.template.js'),'utf8').replace('__API_URL__', api).replace('__WS_URL__', ws).replace('__DEMO_MODE__', process.env.DEMO_MODE || 'false');
+fs.writeFileSync(path.join(out,'frontend-config.js'), config);
+const index = fs.readFileSync(path.join(out,'index.html'),'utf8');
+fs.writeFileSync(path.join(out,'index.html'), index);
+console.log(`Frontend built in ${out}; API=${api || '(same-origin)'}, WS=${ws || '(same-origin)'}`);
