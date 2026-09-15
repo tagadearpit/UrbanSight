@@ -121,3 +121,20 @@ The latest release pass corrected the Render Python service command to `uvicorn 
 Passed in this environment: ZIP integrity; root `npm ci`; `npm run build`; backend and simulator dependency installation; JavaScript syntax checks for frontend, backend, simulator, and build script; Python compilation checks for the AI service scripts; AI service startup and `/health` HTTP 200; static core-schema table identifier checks; seed route coverage checks for R17 and R24; and production URL injection checks.
 
 Not verified because required external infrastructure is unavailable: empty PostgreSQL/PostGIS first boot, migrations and seed execution, database-backed event persistence, PostGIS correlation, database-backed WebSocket event flow, full maintenance persistence, and live Vercel/Render deployment connectivity. Docker, `psql`, `pg_isready`, Vercel CLI, Render CLI, and configured deployment connectors are unavailable in this session. No deployment is claimed without actual service credentials or a connected deployment project.
+
+## Confirmed bug-fix pass — 2026-09-15
+
+### Fixes applied
+
+1. `ai-service/app/real_detectors.py`: real YOLO events no longer include `evidence.imageUrl: None` or `evidence.videoUrl: None`. The optional evidence object is omitted when no artifact exists, matching the backend Zod contract.
+2. `backend/src/server.js`: the traffic trend query now uses explicit `AS hour` and `AS value` aliases.
+3. Removed unused `backend/src/security.js` and `backend/src/db-client.js` because the backend did not import them and retained its own inline implementations.
+4. `backend/src/server.js`: production authentication now verifies HS256 JWT signatures using `JWT_SECRET`, checks expiration, extracts `role` or `roles`, and enforces the route's required role list. Invalid or absent tokens return 401; valid tokens proceed to the database guard.
+
+### Verification executed
+
+Passed: JavaScript syntax checks for frontend, backend, simulator, and build script; Python compilation checks for all AI service scripts; real-detector payload regression with a fake YOLO result; regression checks for the evidence omission, traffic alias, JWT HMAC primitives, and role claim path; AI service startup with `/health` returning HTTP 200; production-mode backend without a database returning 401 for missing authentication and 401 for a malformed token; valid HS256 JWT reaching the database guard and returning the expected HTTP 503 `DATABASE_NOT_CONFIGURED`; `npm ci`; `npm run build`; and required `dist` artifact checks.
+
+### Not executed
+
+The requested live PostgreSQL/PostGIS sequence was not executed in this sandbox because `psql`, `pg_isready`, Docker, and PostgreSQL server binaries are unavailable. Therefore the following remain **NOT VERIFIED — requires live PostgreSQL/PostGIS**: migration, seed, `/health` with PostGIS version, `/api/traffic` against a real database, real YOLO HTTP 201 ingestion, simulator persistence, PostGIS correlation, and database-backed analytics. The supplied live-DB results were not available inside this session, so no live result is claimed.

@@ -42,7 +42,6 @@ def detect_frame(model: Any, frame: Any, *, bus_id: str, route_id: str, latitude
         "longitude": longitude,
         "timestamp": timestamp,
         "severity": "MEDIUM" if sum(vehicle_counts.values()) > 15 else "LOW",
-        "evidence": {"imageUrl": None, "videoUrl": None},
         "metadata": {
             "inferenceMode": "REAL_YOLOV8",
             "detector": "ultralytics-yolov8",
