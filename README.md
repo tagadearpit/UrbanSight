@@ -52,7 +52,7 @@ python ai-service/run_dashcam.py --video ai-service/samples/bus_dashcam_clip.mp4
 python ai-service/run_anpr.py --image ai-service/samples/plate_poc.png
 ```
 
-For road-defect inference, train and pass a labeled YOLO checkpoint with `--weights`; do not use generic COCO weights as a pothole detector.
+Road-defect inference defaults to the committed `ai-service/models/road-defects-yolov8n.pt` checkpoint, trained on the public CC0 Kaggle Potholes-Detection-YOLOv8 dataset. It contains one `pothole` class. The 30-epoch validation run reported precision 0.799, recall 0.683, mAP50 0.774, and mAP50-95 0.510. These are hackathon-scale CPU results, not production accuracy claims. Override with `--weights` when evaluating another checkpoint.
 
 ## Frontend deployment
 

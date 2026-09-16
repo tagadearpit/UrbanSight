@@ -10,6 +10,8 @@ bus telemetry feed later.
 """
 from __future__ import annotations
 import argparse
+import json
+from pathlib import Path
 import time
 import requests
 import cv2
@@ -22,7 +24,7 @@ parser.add_argument("--bus", default="BUS-042")
 parser.add_argument("--route", default="R17")
 parser.add_argument("--lat", type=float, default=19.076)
 parser.add_argument("--lon", type=float, default=72.877)
-parser.add_argument("--weights", default=None)
+parser.add_argument("--weights", default=str(Path(__file__).resolve().parent / "models" / "road-defects-yolov8n.pt"))
 parser.add_argument("--sample-every", type=int, default=5)
 parser.add_argument("--dry-run", action="store_true", help="Run real inference and print events without POSTing")
 args = parser.parse_args()
@@ -41,12 +43,12 @@ while True:
         continue
     event = detect_frame(model, frame, bus_id=args.bus, route_id=args.route, latitude=args.lat, longitude=args.lon)
     if args.dry_run:
-        print({"eventType": event["eventType"], "confidence": event["confidence"], "vehicleCount": event["metadata"]["vehicleCount"], "detector": event["metadata"]["detector"]})
+        print(json.dumps(event, sort_keys=True))
     else:
         response = requests.post(f"{args.backend}/api/events", json=event, timeout=15)
         response.raise_for_status()
     sent += 1
-    print(f"frame={frame_no} mode={'dry-run' if args.dry_run else 'POST'} vehicles={event['metadata']['vehicleCount']} weights={weights}")
+    print(f"frame={frame_no} mode={'dry-run' if args.dry_run else 'POST'} eventType={event['eventType']} confidence={event['confidence']} vehicles={event['metadata']['vehicleCount']} weights={weights}")
     time.sleep(0.02)
 cap.release()
 print(f"sent={sent} real YOLO events to {args.backend}")

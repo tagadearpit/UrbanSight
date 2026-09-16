@@ -1,0 +1,132 @@
+{
+  "event": {
+    "busId": "BUS-042",
+    "confidence": 0.731,
+    "eventId": "det_1789552012976",
+    "eventType": "POTHOLE",
+    "latitude": 19.076,
+    "longitude": 72.877,
+    "metadata": {
+      "detections": [
+        {
+          "bbox": [
+            101.76,
+            166.61,
+            147.5,
+            187.02
+          ],
+          "confidence": 0.731,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            87.69,
+            101.69,
+            151.1,
+            110.73
+          ],
+          "confidence": 0.4848,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            130.12,
+            121.26,
+            235.22,
+            133.25
+          ],
+          "confidence": 0.4237,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            171.64,
+            125.79,
+            195.06,
+            132.04
+          ],
+          "confidence": 0.3736,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            64.61,
+            122.8,
+            106.25,
+            138.64
+          ],
+          "confidence": 0.3647,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            81.16,
+            91.81,
+            120.87,
+            97.98
+          ],
+          "confidence": 0.3641,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            146.36,
+            157.52,
+            169.3,
+            166.97
+          ],
+          "confidence": 0.3377,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            130.78,
+            121.88,
+            198.63,
+            133.15
+          ],
+          "confidence": 0.3079,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            262.8,
+            168.59,
+            289.89,
+            175.9
+          ],
+          "confidence": 0.3018,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            111.47,
+            101.91,
+            149.42,
+            109.27
+          ],
+          "confidence": 0.3012,
+          "label": "pothole"
+        },
+        {
+          "bbox": [
+            167.7,
+            121.99,
+            233.26,
+            132.29
+          ],
+          "confidence": 0.2994,
+          "label": "pothole"
+        }
+      ],
+      "detector": "ultralytics-yolov8n-road-defects",
+      "inferenceMode": "REAL_YOLOV8_ROAD_DEFECTS",
+      "vehicleCount": 0,
+      "vehicleTypes": {}
+    },
+    "routeId": "R17",
+    "severity": "LOW",
+    "timestamp": "2026-09-16T09:46:52.976856+00:00"
+  },
+  "image": "/home/ubuntu/urbansight-release/urbansight/ai-service/datasets/road-defects/valid/images/pothole_10.jpg"
+}

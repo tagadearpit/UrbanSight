@@ -138,3 +138,19 @@ Passed: JavaScript syntax checks for frontend, backend, simulator, and build scr
 ### Not executed
 
 The requested live PostgreSQL/PostGIS sequence was not executed in this sandbox because `psql`, `pg_isready`, Docker, and PostgreSQL server binaries are unavailable. Therefore the following remain **NOT VERIFIED — requires live PostgreSQL/PostGIS**: migration, seed, `/health` with PostGIS version, `/api/traffic` against a real database, real YOLO HTTP 201 ingestion, simulator persistence, PostGIS correlation, and database-backed analytics. The supplied live-DB results were not available inside this session, so no live result is claimed.
+
+## Road-defect model release pass — 2026-09-16
+
+The default generic COCO checkpoint path was replaced with a committed custom checkpoint at `ai-service/models/road-defects-yolov8n.pt`. The model was trained with the existing Ultralytics training script for 30 epochs, resuming from an intermediate checkpoint after the sandbox execution limit interrupted the first process.
+
+The dataset is the public Kaggle **Potholes-Detection-YOLOv8** dataset, reported as CC0: 1,581 training images, 396 validation images, one class (`pothole`), and YOLO-format bounding-box labels. It is stored under `ai-service/datasets/road-defects/` with a portable repository-relative `data.yaml`.
+
+Final validation output from the completed run: 395 validation images, 1,394 instances, precision **0.799**, recall **0.683**, mAP50 **0.774**, and mAP50-95 **0.510**. These are hackathon-scale CPU validation results and are not production-grade accuracy claims.
+
+The detector mapping was updated so normalized classes map into backend-compatible event types: `pothole`/`potholes` → `POTHOLE`, `waterlogging` → `WATERLOGGING`, road damage → `ROAD_DAMAGE`, missing infrastructure/signage → `MISSING_INFRASTRUCTURE`, and pedestrian risk → `PEDESTRIAN_RISK`. Vehicle-only frames retain `TRAFFIC_OBSERVATION` behavior. The event confidence is the selected defect detection confidence, and all raw detections remain in metadata.
+
+A real validation image, `ai-service/datasets/road-defects/valid/images/pothole_10.jpg`, produced this representative event: `eventType=POTHOLE`, confidence **0.731**, detector `ultralytics-yolov8n-road-defects`, inference mode `REAL_YOLOV8_ROAD_DEFECTS`, with 11 raw pothole detections retained in metadata. This validates model-to-event mapping locally.
+
+A live PostgreSQL/PostGIS ingestion run was not performed in this sandbox because PostgreSQL tooling and a database instance are unavailable. Therefore no live `/api/road-issues` persistence response or `NEW_ROAD_ISSUE` WebSocket result is claimed here; those must be run after deploying or connecting Supabase/PostGIS.
+
+The trained checkpoint was also exercised through `ai-service/run_dashcam.py` on the downloaded dataset's `sample_video.mp4` with `--sample-every 30 --dry-run`. It emitted 12 real YOLO events and ended with `sent=12 real YOLO events`; sampled frames included `eventType=POTHOLE` with confidences such as 0.8535, 0.6680, 0.7353, and 0.8241. This was a local dry run without a live backend, so it verifies the edge runner and event mapping but not PostgreSQL persistence.
