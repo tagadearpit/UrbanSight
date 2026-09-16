@@ -1,0 +1,33 @@
+# Dependencies and local environments
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local environment files
+.env
+.env.*
+!.env.example
+
+# Raw ML datasets and downloaded media
+ai-service/datasets/
+
+# Training outputs and experiment artifacts
+runs/
+wandb/
+mlruns/
+*.pt
+*.onnx
+*.engine
+*.safetensors
+*.pth
+
+# Keep the UrbanSight road-defect checkpoint tracked
+!ai-service/models/
+!ai-service/models/road-defects-yolov8n.pt
+
+# Generated frontend/build and local logs
+dist/
+*.log
+.DS_Store

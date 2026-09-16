@@ -58,8 +58,8 @@ Because the database was unavailable, data-dependent controls could not be compl
 ## Exact commands used
 
 ```bash
-unzip -q /home/ubuntu/upload/UrbanSight-SIH26124-ai-complete.zip -d /home/ubuntu/urbansight-release
-cd /home/ubuntu/urbansight-release/urbansight
+unzip -q UrbanSight-SIH26124-ai-complete.zip -d release
+cd release/urbansight
 npm install --package-lock-only --ignore-scripts
 npm ci --ignore-scripts
 npm run build:frontend

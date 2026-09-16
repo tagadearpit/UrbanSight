@@ -128,5 +128,5 @@
     "severity": "LOW",
     "timestamp": "2026-09-16T09:46:52.976856+00:00"
   },
-  "image": "/home/ubuntu/urbansight-release/urbansight/ai-service/datasets/road-defects/valid/images/pothole_10.jpg"
+  "image": "ai-service/datasets/road-defects/valid/images/pothole_10.jpg"
 }
